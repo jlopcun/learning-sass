@@ -1,0 +1,457 @@
+@use "sass:meta"
+@use "sass:selector"
+@use "sass:math" 
+@use "_library" as * with ($varConfig1 : "style.sass")
+@use "main" 
+
+// ESTRUCTURA DE UNA HOJA DE ESTILOS EN SASS
+
+// Al igual que en css , las hojas de estilos en sass se componen de STATEMENTS , que en la sintaxis de SCSS se separan por ; y en la de SASS por indentaciones
+// e.g (  propiedad: valor;  )-->SCSS       (  propiedad: valor  )-->SASS
+
+/* UNIVERSAL STATEMENTS: pueden ser usados en cualquier parte de la hoja de estilos:
+    --Variable declarations : $varName : varValue
+    --flow control at-rules : como @ if o @ each
+    --Las reglas @ error , @ warn y @ debug */
+
+/* CSS STATEMENTS 
+    Estos statements producen CSS;pueden ser usados en cualquier parte menos dentro de una función ( @ function ) 
+    --Reglas de estilos: lo que en CSS normal sería por ejemplo : (  h1{ propiedad:valor; propiedad:valor;  )
+    --CSS at-rules : como @ media o @ font-face
+    --Mixins : usando @ include
+    --La regla at-root*/
+
+/*STATEMENTS DE PRIMER NIVEL (top level statements)
+    Solo pueden ser usadas en lo alto de una hoja de estilos o en lo alto (top level) de un statement
+    --Cargas de modulos : usando @ use
+    --Importaciones : usando @ import
+    --Definiciones de mixins: usando @ mixin
+    --Definiciones de funciones: usando @ function*/
+
+/*OTROS STATEMENTS
+    --Declaraciones de propiedades : como width:150px que solo pueden ser usadas dentro de reglas de estilo o alguna at-rules
+    --La regla de estilo @ extend solo puede ser usada dentro de reglas de estilo*/
+
+
+
+/*EXPRESIONES 
+    Una expresón es cualquier cosa que vaya en el lado derecho de la declaración de una propiedad o una variable.
+    Cada expresión produce un valor.Cualquier valor valido en CSS es también una expresión de Sass, pero las expresiones Sass son mucho más poderosas que los valores CSS, ya que pueden ser pasadas como argumentos a mixins y a funciones, pueden ser usadas para controlar el flujo con la regla @ if y también pueden ser manipuladas usando aritmética.La sintaxis de las Sass expressions se conoce como SassScript.
+
+    TIPOS DE EXPRESIONES: 
+
+    --LITERALS--
+        Son las expresiones más simples , representan valores estáticos:
+        1.-Numbers (números): que tendrán que llevar unidades o no ( depende del caso); como 12, 150px...
+        2.-Strings (cadenas de texto): que tendrán que llevar comillas o no (depende del caso) ; como  "Helvetica Neue" o bold.
+        3.-Colors (colores) : que pueden ser representados mediante la representación de su hex o por su nombre ; como #f00 #ff0000 o red
+        4.-Boolean literals : true o false
+        5.-La instancia única null
+        6.-Lists of values (listas de valores): que  pueden ir separadas por comillas o por espacios y que pueden estar encapsuladas entre paréntesis o no llevar paréntesis: como 1rem 0 2rem 0 o Arial,Helvetica,sans-serif
+        7.-Maps ( mapas): que asocian valores con sus llaves(keys) : como ("background" : red , "foreground" : pink)
+
+    --OPERACIONES--
+        1.- == y != : que sirven para saber si dos valores son iguales ( == ) o no ( != )
+        2.-+,-,*,/,% : que tienen su uso habitual en las matemáticas
+        3.- <,>,<=,>= : que sirven para saber si un número es mayor a otro(>), menor a otro(<) , mayor o igual a otro(>=) o menor o igual a otro(<=)
+        4.-and , or y not : que comparan booleanos; Sass solo considera falsos a false y a null , el resto de valores serán considerados verdaderos
+        5.-( and ) : puede ser usado para expresar la precedencia de operaciones
+
+    --OTRAS EXPRESIONES--
+        1.- Variables : como $var
+        2.-Function calls
+        3.-Funciones especiales : como calc( operación matemática )
+        4.-El selector de pariente &
+        5.-El valor !important*/
+
+
+/*COMENTARIOS
+    // comentario de una sola línea
+    /*comentario de varias líneas*/
+    /// comentario para documentación*/
+
+
+/*FUNCIONES ESPECIALES
+    1.- url()
+        La función url puede recibir tanto una string con comillas ("String") como una string sin comillas (String).
+        Por ello el uso de una o de otra depende de lo que se quiera hacer con SASS
+        Para usar una variable de sass a una url sin recibir errores podría hacerse lo siguiente:
+            Pasa la función con una string con comillas
+            url("#{variableSass}/resto del link")
+
+            Pasa la función con una operación aritmética    
+            url(variableSass + "resto del link")
+                
+            Pasa la función con una string sin comillas usando interpolación para añadir el valor de la variable
+            url(#{variableSass}/resto del enlace)
+    
+    2.- element() , progid:...() y expression()
+
+        La función element() esta integrada en la especificación de css , y como usa # para el id del elemento en cuestión , necesitamos la interpolación para hacerla funcionar:
+            element(##{id del elemento})*/
+
+// REGLAS DE ESTILO EN SASS:
+/*La sintaxis de Sass es muy parecida a la de css , solo que no se usan los puntos y comas ; ni tampoco los corchetes {} , sino que se usan interpolaciones*/
+// También podemos hacer nesting de una manera más sencilla que en css
+// En este fragmento podemos ver como se definen dos reglas en Sass , una dentro de la otra usando nesting
+.sassUl
+    display: grid
+    grid-template-columns: repeat(2,1fr)
+    grid-auto-rows:1fr
+    width:400px
+    height:400px
+    background: blue
+    border: 1px solid black
+    // en este caso indica que el elemento .sassLi esta dentro de .sassUl , lo que en css se escribiría como .sassUl .sassLi
+    .sassLi
+        width:200px
+        height: 200px
+        background: red
+        border: 2px solid aquamarine
+
+// LISTAS DE SELECTORES
+// El nesting también nos facilita la vida a la hora de escribir listas de selectores , por ejemplo
+
+// En este caso se selccionarán todos los elementos ul y li que estén dentro de un .l1 o .l2 , selectro que en css se escribiría:
+// .l1 ul , .l1 li , .l2 ul , .l2 li 
+.l1 , .l2
+    ul,li
+        background : #ff0
+
+// SELECTOR COMBINATORS
+// También podemos usar combinadores de selectors ( como > , ~ , + ) con el nesting y así ahorrar código
+// En este caso estaríamos seleccionando un elemento p que esté justo despues de .l1 y cualquier hermano h1 siguiente a .l1
+.l1
+    + p
+        bakcground: red
+    ~ h1
+        background: cyan
+
+// INTERPOLATION
+// También podemos usar la interpolación para introducir valores de variables o llamadas a funciones dentro de un selector
+// En este caso estamos usando la interpolación para introducir en el selector el resultado de una operacion, lo que resultará en el selector .l1
+.l#{5-4}
+    transform: rotate(10deg)
+
+
+// DECLARACIÓN DE PROPIEDADES
+// Las propiedades pueden recibir como valor cualquier expresion de SassScript vistas anteriormente
+
+
+// INTERPOLACIÓN EN EL NOMBRE DE UNA PROPIEDAD
+// Los nombres de propiedades pueden incluir interpolaciones, incluso todo el nombre de una propiedad puede ser una interpolación
+.l1
+    background-#{color}: grey
+    #{border}: 3px solid green
+
+
+//NESTING
+// Hay conjuntos de propiedades que empiezan con la misma palabra( como font-family , font-size , font-weight ; todas comienzan por font)
+// También hay sorthands ( como margin , que puede recibir valores para top ,left , bottom y right)
+// En estos dos casos se puede usar el nesting
+.l1
+    font: 
+        size:1.2em
+        weight: bold
+        family: sans-serif
+    margin: 
+        bottom:2rem
+        left:3rem 
+
+
+// HIDDEN DECLARATIONS
+// Tal vez quieres que una propiedad tenga un valor u otro cuando  una declaración se cumpla, para eso usamos if(declaración,valor si true,valor si false)
+// Solo se evaluará a falso en caso de false o string vacia
+$myVar: false
+// Si myVar evalúa a falso, no podrá radius, si evalúa a verdadero , pondrá un radius de 5px
+.l1
+    border-radius: if($myVar,5px,null)
+
+// CUSTOM PROPERTIES
+// En sass también podremos definir custom properties, pero , como sass pasará sus valores tal y como son a css, debemos tener cuidado cuando queramos usar una variable sass para pasarlo.
+
+$varColor : blue
+:root
+    --primaryColor: #f00
+    --secondaryColor: aquamarine
+    --customColor: #{$varColor}
+    --customColorErr: $varColor
+    --myStringInterpolated: #{meta.inspect("hola que tal")}
+    --myNormalString:"hola que tal"
+// Como la interpolación elimina las comillas de las strings es más dificil pasarlas como custom properties, como solución , podemos usar la  función meta.inspect() dentro de la interpolación 
+// No obstante, si no necesitamos usar la interpolación , podemos pasar como custom property directamente la string que deseemos tal y como lo hace --myNormalString
+
+// PARENT SELECTOR &
+// Sirve cambiar la posición del selector ancestro dentro del selector descendiente, es decir, en vez de ir colocado el selector ancestro al inicio de el selector descendiente, se colocará en la posición del &
+
+// en este caso , los estilos no se aplicarían al selector .l1 .header .l1, sino que , al usar el parent selector , este es sustituido por el selector ancestro
+// De modo que los estilos se aplicarían al selector .header .l1 
+.l1
+    .header &
+        background-color: orange
+// Esto se puede usar para:
+// Añadir un pseudo-elemento al elemento padre
+.l1
+    &::after
+        content:""
+        display: inline-block
+        width:100px
+        height:100px
+        background-color: red
+
+// Para dar estilos al selector externo en algún determinado contexto
+.l1
+    [data-me="hi"] &
+        background-color: orange
+
+.l1
+    .h1 &
+        background-color: blue
+
+// Puede usarse como argumento para un selector de pseudo-clase
+
+
+.l1
+    :not(&)
+        background-color: white
+
+// AÑADIR SUFIJOS
+// EL parent selector también puede ser usado para añadir sufijos
+.l1
+    &__main //.l1__main
+        background-color: blue
+    &__foot // .l1__foot
+        background-color: pink
+
+// & EN SASSSCRIPT
+// El parent selector también puede ser usado como una sass expression y ser pasado a funciones
+.me
+    background-color: if(&,skyblue,red) // if(.me,skyblue,red)
+
+// PLACEHOLDER SELECTORS
+// Son selectores que no se compilan al css pero que pueden ser extendidos con @ extend
+%placeholder
+    border-top-left-radius: 50%
+    border-style: dashed
+
+.l1
+    @extend %placeholder
+//PUEDEN SER USADOS COMO UTILITY CLASSES, EN VEZ DE PONER ATRIBUTOS EN EL HTML, PONEMOS PLACEHOLDER SELECTORS EN SASS Y LOS EXTENDEMOS
+
+
+// VARIABLES
+$variable : "valor de la variable"
+
+// asignar valor por defecto a una variable
+$variableDefecto: "valor por defecto" !default
+
+// las variables predefinidas (built-in variables) NO PUEDEN SER MODIFICADAS
+
+
+// SCOPE
+// las variables definidas fuera de cualquier bloque son GLOBALES y pueden ser accedidas desde cualquier punto , pero las definidas dentro de un bloque son LOCALES PARA ESE BLOQUE
+
+$variableGlobal : "esto es una variable global"
+.l1
+    $variableLocal : "esto es una variable local del selector .l1"
+
+//SHADOWING
+$var : "global"
+.l1
+    $var : "local .l1" //"local .l1"
+.l2
+    content:$var // global
+
+// Si una variable local es definida con el mismo nombre que una global, dentro del bloque de la local se usará su valor, pero en los demás , se usará el valor global
+$globalFromLocal:"definición de variable"
+.l1
+    $globalFromLocal : "reasignación de una variable global desde un bloque con la bandera !global" !global 
+
+//FUNCIONES AVANZADAS DE VARIABLES
+$varGlobal:"existo"
+.l1
+    $varLocal:"existo"
+    //                   evalua si existe la variable local   evalua si existe la variable global
+    background-color: if(meta.variable-exists("varLocal") and meta.global-variable-exists("varGlobal"),green,red)
+
+
+// AT-RULES: https://sass-lang.com/documentation/at-rules
+
+// @ use rule
+// Sirve para cargar variables, funciones y mixins de otros archivos Sass y debe ir en el nivel más alto de la hoja de estilos
+// Los estilos cargados por esta regla se llaman modulos
+
+// Loading members
+// Para cargar partes especificas de un módulo , se pondrá el nombre del mismo acompañado de un punto(member operator) y el miembro al que se quiera acceder
+// en este caso accedemos a la variable pi del módulo sass:math
+.l1
+    border: #{math.$pi}px solid blue
+
+// Namespace
+// el namespace de un módulo es la última parte de la url sin la extensión , p.g de library.sass sería library
+// Podemos cambiar este namespace para poder referirnos al módulo con otro nombre
+// Para ello pondremos @ use "library.sass" as newName
+// También podemos hacer que no haga falta llamar al módulo para cargar su contenido, para ello
+// @ use "library.sass" as * (sólo recomendable para archivos creados por uno mismo)
+    
+// Miembros privados (miembros que no pueden ser accedidos fuera de su archivo original) (e.g library.sass)
+.l1
+    @include flex(row,wrap,center,center)
+    // @include -privMixin()
+    // content:$-private
+    // estos dos últimos miembros no pueden ser accedidos porque son privados de su archivo
+// Configuración
+// para configurar los valores de variables definidas por defecto en un módulo , deberemos usar @ use con with ($variable : valor, $variable : valor...)
+
+// @debug $varConfig1
+// @debug $varConfig2
+
+// Config with mixins ( library.sass lines 19-45)
+
+// se incluyen las configuraciones 
+@include configure($varConfig3 : "varConfig3",$varConfig5 : "varConfig5")
+
+// se incluyen los estilos
+@include styles
+
+// Reassigning variables
+$variableAsignada : "he sido asignada"
+$variableAsignada : "he sido reasignada"
+.l1
+    $variableAsignada : "he sido reasignada ÚNICAMENTE dentro de este bloque"
+    // @debug $variableAsignada
+// @debug $variableAsignada
+
+// LAS VARIABLES PROCEDENTES DE MÓDULOS DE SASS (como math.$pi) NO PUEDEN SER REASIGNADAS
+
+// FINDING THE MODULE
+// En sass las URL's no tienen porque llevar la extension de archivo , por ejemplo : @ use "library.sass es lo mismo que @ use "library
+
+//Differences From @import
+
+// The @use rule is intended to replace the old @import rule, but it’s intentionally designed to work differently. Here are some major differences between the two:
+
+//     @use only makes variables, functions, and mixins available within the scope of the current file. It never adds them to the global scope. This makes it easy to figure out where each name your Sass file references comes from, and means you can use shorter names without any risk of collision.
+
+//     @use only ever loads each file once. This ensures you don’t end up accidentally duplicating your dependencies’ CSS many times over.
+
+//     @use must appear at the beginning your file, and cannot be nested in style rules.
+
+//     Each @use rule can only have one URL.
+
+//     @use requires quotes around its URL, even when using the indented syntax.
+
+
+// FORWARD ( @forward )
+// Forward hace que un archivo sass tenga acceso a las variables , funciones y mixins de otro archivo sass CUANDO ESTE ES IMPORTADO usando @use
+
+// @debug main.$mainSassVariable
+// @debug main.$secondSassVariable
+// @debug main.$preSassVariable
+
+// En este caso importamos el archivo main.sass con @use, e imprimimos el valor de $mainSassVariable , que estaba definida en su interior
+// Después imprimimos el valor de $secondSassVariable, que fué definida dentro de mysass/second.sass , accediendo a esta desde main tras su "importación" con @forward en main.sass línea 2
+//Finalmente imprimimos el valor de $preSassVariable, que fué definida dentro de mysass/pre.sass, accediendo a esta desde main tras su "importación" con @forward en main.sass en la línea 1
+
+// NOTA: si se quieren usar @forward y @use a la vez , deberá ponerse primero @use
+
+// AÑADIR PREFIJOS
+// forward permite añadir prefijos (main.sass línea 4 donde se le añade el prefijo prefix) poniendo @forwar as prefijo-*
+
+// @debug main.$prefix-varFromPrefix
+
+// CONTROLLING VISIBILITY (main.sass líneas 5(show) y 6(hide))
+
+//CONFIGURATION WITH @forward (main.sass línea 7)
+
+// @debug main.$bl
+
+
+// @import RULE (<<DEPRECATED>>) use @use instead
+
+// MIXINS: @mixin https://sass-lang.com/documentation/at-rules/mixin
+
+@mixin mySassMixin($arg1,$arg2)
+    background-color: grey
+    content: "#{meta.inspect($arg1)}, #{meta.inspect($arg2)}"
+    &__child
+        width:500px
+        height:200px
+        background-color: blue
+        transform: rotate(-50deg) translateY(150px)
+
+.l1
+    @include mySassMixin("hola","que tal")
+
+// OPTIONAL/DEFAULT ARGUMENTS AND KEYWORD ARGUMENTS
+// Los parámetros de los mixins pueden ser nombrados y tener valores por defecto
+@mixin mySecondSassMixin($arg1 : "def",$arg2:"def",$arg3:"def")
+    content : "#{$arg1}, #{$arg2}, #{$arg3}"
+
+// Ambas carácteristicas pueden ser usadas conjuntamente de esta manera, donde $arg1 será arg1 , $arg2 será def y $arg3 será arg3
+.l1
+  @include mySecondSassMixin($arg1 :"arg1",$arg3:"arg3")
+
+// TAKING ARBITRARY ARGUMENTS
+
+@mixin sassArb($arg1,$argList...)
+    content:"#{$argList}"
+
+.l1
+    @include sassArb("holas","un","dos","tres")
+
+// TAKING ARBITRARY KEYWORD ARGUMENTS
+
+// con la función meta.keywords(list) obetenemos una lista de los parámetros nombrados con sus valores
+
+// @mixin keywordArbs($list...)
+//     @debug meta.keywords($list)
+
+
+// @include keywordArbs($name : "Jlop",$stack:false,$good:true)
+
+// PASSING ARBITRARY ARGUMENTS
+
+@mixin moreArbs($arbs...)
+    content: "#{$arbs}"
+
+.l1
+    $varList: "esto","es","una","lista"
+    @include  moreArbs($varList...)
+
+// CONTENT BLOCKS
+// los content blocks podrán ser definidos SOLO si en el cuerpo del mixin se encuentra @content, y su localización será donde se coloque el content block
+@mixin contentMixin($arg1,$arg2)
+    &__child
+        content:"#{$arg1} #{$arg2}"
+        @content
+
+.l1
+    @include contentMixin("holasss","nao") //los content blocks se definen en la invocación del mixin como si este se tratara de un selector CSS
+            $bg-color : skyblue
+            background-color: $bg-color
+            &__child
+                color: $bg-color
+
+//PASSING ARGUMENTS TO CONTENT BLOCKS
+// los content blocks también pueden recibir argumentos de la siguiente forma
+
+@mixin contentArgs($type)
+
+    @content ($type)
+        
+// los content blocks solo podrán usar como argumentos los argumentos pasados al mixin
+.l1
+    @include contentArgs("tipo 2") using ($type)
+        &__type
+            content:"#{$type}"
+
+    
+// INDENTED MIXIN SYNTAX
+// = para definir el mixin y + para incluirlos
+=indentedMixin($arg)
+    content:"#{$arg}"
+    background-color: purple
+
+.l1
+    +indentedMixin("mixin indentado")

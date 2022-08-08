@@ -1,0 +1,44 @@
+@mixin flex($direction,$wrap,$justify,$align)
+    display: flex
+    flex-flow: $direction $wrap
+    justify-content: $justify
+    align-items: $align
+
+// Private members
+// definidos con un - o un _ antes de su nombre
+$-private: "I'am a private member"
+
+@mixin -privMixin()
+    content:"I'am a private mixin"
+
+// Configuration
+
+$varConfig1: "default library.sass" !default
+$varConfig2:"default library.sass" !default
+
+// Configuration with @mixin
+
+// Se definen las variables como privadas para evitar su acceso desde otros archivos
+$-varConfig3: "default library.sass"
+$-varConfig4 : "default library.sass"
+$-varConfig5 : null
+
+@function config5()
+    @return $-varConfig5 or ("default library.sass")
+
+// se añade el mixin configure, que configura las variables según hayan sido llamadas o no
+
+@mixin configure($varConfig3 : null,$varConfig4 : null,$varConfig5 : null)
+    @if $varConfig3
+        $-varConfig3 : $varConfig3 !global
+    @if $varConfig4
+        $-varConfig4 : $varConfig4 !global
+    @if $varConfig5
+        $-varConfig5 : $varConfig5 !global
+
+//se añaden los estilos derivados de las variables configuaradas anteriormente 
+    
+@mixin styles
+    .l1
+        content: "#{$-varConfig3} #{$-varConfig4} #{$-varConfig5}"
+         

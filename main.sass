@@ -1,0 +1,7 @@
+@forward 'mysass/pre'
+@forward 'mysass/second'
+@forward 'mysass/prefix' as prefix-*
+@forward 'mysass/visibility' show $show //solo mostrará la variable  $show del archivo 
+@forward 'mysass/visibility' hide $hide //solo ocultará la variable $hide del archivo
+@forward 'mysass/module' with($bl:#000 !default)
+$mainSassVariable : "variable definida en el archivo main.sass"
